@@ -1,0 +1,28 @@
+(function(){'use strict';function a(a,d,e,f,g,h){function i(a){var b=a.paySchedule,d=a.currentDetails;return null==d._payLane||null==d._payStep?0:c(b,'payLanes')[d._payLane].paySteps[d._payStep].payRate}function j(a){var b=a.employmentGroups,c=a.jobType;return b.find(function(a){return a.value===c._bargainingUnit.id})}function k(a){var b=a.paySchedule,d=a.assignmentDetails;return g.isValidPS(b)?c(b,'payRateFrequency'):null==d._payRateFrequency?c(b,'payRateFrequency'):d._payRateFrequency}/*
+	  * Given an employee with _assignments, this will find the assignment that exists at the _asOf time of the form instance.
+	  * Also handles formatting concerns for the relative day of the assignment
+	  * NOTE: formattedStartDateUtc might be out of sync eventually with _startDateUtc if _startDateUtc is updated. Same for formattedEndDateUtc.
+	  */var l=['_payLane','_payStep','_workDaysPerYear','_payPeriodsPerYear','_hoursPerDay','_fTE','_vacationDaysPerSchoolYear','_sickDaysPerSchoolYear','_personalDaysPerSchoolYear','_paidHolidaysPerSchoolYear','_payRateFrequency','_payRate'];return{// #--------------------------------# //
+// #---- Helper (assignmentHlp) ----# //
+getEmployementGroup:function(a){var b=a.employementGroups,c=a.jobType;return j({employmentGroups:b,jobType:c})},getEmploymentGroup:j,jobTypeValuesForAssignment:function(a){var c=a.paySchedule,e=a.jobTypeDetails,f=a.assignmentDetails,g=f===void 0?{}:f,h=l.reduce(function(a,b){return a[b]=null==g[b]?e[b]:g[b],a},{});h._payRateFrequency=k({paySchedule:c,assignmentDetails:g});var i=!(g._payRateFrequency!==d.annually)||b(h._hoursPerDay)&&b(h._workDaysPerYear)&&b(h._payPeriodsPerYear)&&null!==g._payRateFrequency;return Object.assign(h,{_jobTypeValuesForAssignmentAreValid:i})},calculatePayPerPeriod:function(a){var b=a.annualSalary,c=b===void 0?null:b,d=a.calculatedSalary,e=d===void 0?null:d,f=a.payPeriodsPerYear,g=null==c?e:c;return 0>=f||0>=g?0:g/f},calculateAnnualSalary:function(a){var b=a.payRateFrequency,c=a.payRate,e=a.hoursPerDay,f=a.workDaysPerYear;return b===d.annually?c:c*e*f},getPayRate:i,getPayRateFequency:k,getPayRateFrequency:k,calculatePayRate:h('ssEmployeeAssignmentHlp.calculatePayRate()','ssEmployeeAssignmentHlp.getPayRate()',i),getPrimaryAssignment:function(b,c,d){if((void 0===c&&(c=null),null!=b._assignments)&&0!==b._assignments.length){var f=c?c._asOf:null,g=b._assignments.find(function(b){return b._isPrimary&&e.isCurrent({obj:b,asOfDate:f,fromProp:'_startDateUtc',toProp:'_endDateUtc',org:d})});if(g){var h=g._startDateUtc,i=g._endDateUtc;g.formattedStartDateUtc=a.isForeverPast(h)?'':e.utcIsoToRelativeMoment(h,d).format('MM/DD/YYYY'),g.formattedEndDateUtc=a.isForeverFuture(i)?'':e.utcIsoToRelativeMoment(i,d).format('MM/DD/YYYY')}return g}},getEarliestOtherAssignment:function(b,c,d){/*
+	  	FPS-1901
+	  	_areSortingSecondaryAssignmentsByLatest is a property that we are adding on new form instanceStep
+	  	This new property will sort the assignments By Latest so moving on all the new instances will have the
+	  	sorting by Latest and absence of this property will sort the assignments By Earliest which will
+	  	keep data intact for old instances out and signed in Production
+	  			This function name is misleading and reason we didn't change that because we have to change this name
+	  	in couple of places which is increasing the scope and we didn't have the time to do day before Thanksgiving :)
+	  */// In the interim, if we have the org of the logged in user use the new one to make dates relative to that org, otherwise use the old one that doesn't
+// <revert this conditional once all code locations have been moved to pass in the org.  ssEffectiveDateHlp.isCurrent() has been deprecated.>
+if((void 0===c&&(c=null),null!=b._assignments)&&0!==b._assignments.length){var g=c?c._asOf:null,h=b._assignments.filter(function(b){return!b._isPrimary&&e.isCurrent({obj:b,asOfDate:g,fromProp:'_startDateUtc',toProp:'_endDateUtc',org:d})}),i=c._areSortingSecondaryAssignmentsByLatest,j=f.sortByObjectKey(h,'_createdUtc',// key
+!!i// order
+),k=f.sortByObjectKey(j,'_startDateUtc',// key
+!!i// order
+),l=k[0];if(l){var m=l._startDateUtc,n=l._endDateUtc;l.formattedStartDateUtc=a.isForeverPast(m)?'':e.utcIsoToRelativeMoment(m,d).format('MM/DD/YYYY'),l.formattedEndDateUtc=a.isForeverFuture(n)?'':e.utcIsoToRelativeMoment(n,d).format('MM/DD/YYYY')}return l}},getPayRateFrequencyString:function(a,b){return null==a?'N/A':b.find(function(b){return b.value===a}).name},jobTypeDetailFields:function(){return[[{prop:'_fTE',displayText:'FTE',dataTest:'fte'},{prop:'_hoursPerDay',displayText:'Hours/Day',dataTest:'hours-per-day'},{prop:'_workDaysPerYear',displayText:'Work Days/Year',dataTest:'work-days-per-year'}],[{prop:'_sickDaysPerSchoolYear',displayText:'Sick Days/Year',dataTest:'sick-days-per-school-year'},{prop:'_personalDaysPerSchoolYear',displayText:'Personal Days/Year',dataTest:'personal-days-per-school-year'},{prop:'_vacationDaysPerSchoolYear',displayText:'Vacation Days/Year',dataTest:'vacation-days-per-school-year'}]]}// #-- END Helper (assignmentHlp) --# //
+// #--------------------------------# //
+}}function b(a){return null!=a&&0!==a}/**
+	 * Gets a value checking the non-underscore property then checks the underscore property
+	 * @param {Object} model
+	 * @param {String} prop
+	 */function c(a,b){return a.hasOwnProperty(b)?a[b]:a.hasOwnProperty('_'+b)?a['_'+b]:void 0}a.$inject=['ssDateHlp','enumPayRateFrequency','ssDateByOrgHlp','ssArrayHlp','ssJobTypeHlp','ssDeprecated'],angular.module('super-suit-helpers').factory('ssEmployeeAssignmentHlp',a)})();
+//# sourceMappingURL=employee-assignment.js.map
