@@ -41,7 +41,7 @@ registerRouteData('ec-settings', [{
     url: '/status-reasons'
 }, {
     stateName: 'generalConfig.supplementals',
-    url: '/general-config/supplementals'
+    url: '/supplementals'
 }, {
     stateName: 'index',
     url: '/'
