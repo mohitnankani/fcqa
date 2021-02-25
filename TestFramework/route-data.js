@@ -1,105 +1,99 @@
 'use strict';
 
-registerRouteData('universal-employee', [{
-    stateName: 'downloads',
-    url: '/downloads?&fileid',
-    $permissions: function $permissions(ssPermissionSvc) {
-        return ssPermissionSvc.checkIfUserRole('IdmAdministrator');
+registerRouteData('ec-settings', [{
+    stateName: 'generalConfig.credentials',
+    url: '/credentials/:credentialGroup/:credentialType'
+}, {
+    stateName: 'generalConfig.departments',
+    url: '/departments'
+}, {
+    stateName: 'generalConfig.driversLicense',
+    url: '/drivers-license'
+}, {
+    stateName: 'generalConfig.employmentGroups',
+    url: '/employment-groups'
+}, {
+    stateName: 'generalConfig',
+    url: '/general-config',
+    $permissions: function $permissions(permissionSvc) {
+        return permissionSvc.isPermittedAction('listHeaders', 'view');
     }
 }, {
-    stateName: 'employeeRecord.applications',
-    url: '/applications'
+    stateName: 'generalConfig.jobTypes.jobTypeDetail',
+    url: '/{jobTypeId:[0-9A-Za-z-]{36}}?action'
 }, {
-    stateName: 'employeeRecord.credentials',
-    url: '/credentials',
+    stateName: 'generalConfig.jobTypes',
+    url: '/job-types'
+}, {
+    stateName: 'generalConfig.locations',
+    url: '/locations'
+}, {
+    stateName: 'generalConfig.positions',
+    url: '/positions'
+}, {
+    stateName: 'generalConfig.signatures',
+    url: '/signatures',
     $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('employees', 'view');
+        return permissionSvc.isPermittedAction('signatures', 'manage');
     }
 }, {
-    stateName: 'employeeRecord.emergency',
-    url: '/emergency{action:.*}',
-    $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('employees', 'edit') || permissionSvc.isPermittedAction('employees', 'view');
-    }
+    stateName: 'generalConfig.statusReasons',
+    url: '/status-reasons'
 }, {
-    stateName: 'employeeRecord',
-    url: '/record/{employeeId:[0-9A-Za-z-]+}',
+    stateName: 'generalConfig.supplementals',
+    url: '/supplementals',
     $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('employees', 'view');
-    }
-}, {
-    stateName: 'employeeRecord.employment',
-    url: '/employment',
-    $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('employees', 'edit') || permissionSvc.isPermittedAction('employees', 'view');
-    }
-}, {
-    stateName: 'employeeRecord.medical',
-    url: '/medical',
-    $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('employees', 'edit') || permissionSvc.isPermittedAction('employees', 'view');
-    }
-}, {
-    stateName: 'employeeRecord.personal',
-    url: '/personal{action:.*}',
-    $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('employees', 'edit') || permissionSvc.isPermittedAction('employees', 'view');
-    }
-}, {
-    stateName: 'employeeRecord.personnel',
-    url: '/personnel',
-    $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('employees', 'edit') || permissionSvc.isPermittedAction('employees', 'view');
+        return permissionSvc.isPermittedAction('supplementals', 'view');
     }
 }, {
     stateName: 'index',
-    url: '/',
+    url: '/'
+}, {
+    stateName: 'permissions.groups.all',
+    url: '/all'
+}, {
+    stateName: 'permissions.groups.detail',
+    url: '/{groupId:[0-9A-Za-z-]+}'
+}, {
+    stateName: 'permissions.groups.detail.groupMembers',
+    url: '/group-members'
+}, {
+    stateName: 'permissions.groups.detail.profileAndScope',
+    url: '/profile-and-scope'
+}, {
+    stateName: 'permissions.groups',
+    url: '/groups'
+}, {
+    stateName: 'permissions',
+    url: '/permissions',
     $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('bundle', 'viewothers');
+        return permissionSvc.isPermittedAction('permissionProfiles', 'edit');
     }
 }, {
-    stateName: 'myProfile',
-    url: '/my-profile',
+    stateName: 'permissions.profiles.all',
+    url: '/all'
+}, {
+    stateName: 'permissions.profiles.detail',
+    url: '/{profileId:[0-9A-Za-z-]{36}}'
+}, {
+    stateName: 'permissions.profiles.detail.tab',
+    url: '/{action:view|edit}/{tab:[0-9A-Za-z-]+}'
+}, {
+    stateName: 'permissions.profiles',
+    url: '/profiles'
+}, {
+    stateName: 'permissions.users.all',
+    url: '/all'
+}, {
+    stateName: 'permissions.users.detail',
+    url: '/{userId:[0-9A-Za-z-]{36}}'
+}, {
+    stateName: 'permissions.users',
+    url: '/users'
+}, {
+    stateName: 'userAccounts',
+    url: '/user-accounts',
     $permissions: function $permissions(permissionSvc) {
-        return !permissionSvc.isPermittedAction('bundle', 'viewothers');
+        return permissionSvc.isPermittedAction('users', 'view') || permissionSvc.isPermittedAction('employees', 'manageAccountAccess');
     }
-}, {
-    stateName: 'reports.assignments',
-    url: '/assignments',
-    $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('assignmentReports', 'view');
-    }
-}, {
-    stateName: 'reports.assignments.report',
-    url: '/report'
-}, {
-    stateName: 'reports.assignments.settings',
-    url: '/settings/:templateId',
-    $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('exportTemplates', 'view');
-    }
-}, {
-    stateName: 'reports.credentials',
-    url: '/credentials',
-    $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('employeecredentials', 'viewreports');
-    }
-}, {
-    stateName: 'reports.demographic',
-    url: '/demographic',
-    $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('employees', 'viewreports');
-    }
-}, {
-    stateName: 'reports.demographic.report',
-    url: '/report'
-}, {
-    stateName: 'reports.demographic.settings',
-    url: '/settings/:templateId',
-    $permissions: function $permissions(permissionSvc) {
-        return permissionSvc.isPermittedAction('exportTemplates', 'view');
-    }
-}, {
-    stateName: 'reports',
-    url: '/reports'
 }]);
